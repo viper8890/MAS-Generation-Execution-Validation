@@ -1,0 +1,4 @@
+python 3.14
+Autogen library for python
+API key for LLM (llama-3.3-70b-versatile used)
+Docker (needs to be running before executing main)
