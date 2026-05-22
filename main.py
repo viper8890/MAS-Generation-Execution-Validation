@@ -13,11 +13,12 @@ from autogen_core import CancellationToken
 
 
 async def main():
-    print("🚀 Initializing Modern AutoGen v0.4 Interactive CLI...\n")
+    print("Initializing Modern AutoGen v0.4 Interactive CLI...\n")
 
-    # 1. Define the LLM Client
+    # Define the LLM Client
     model_client = OpenAIChatCompletionClient(
         model="llama-3.3-70b-versatile", 
+        # Use your api key
         api_key="xxxxxxxxxxxxxxxxxxxxxx",
         base_url="https://api.groq.com/openai/v1",
         model_info={
@@ -32,7 +33,7 @@ async def main():
 
     
     print("="*60)
-    print("🤖 Autonomous Coding Agent CLI - Type 'exit' to quit")
+    print("Autonomous Coding Agent CLI - Type 'exit' to quit")
     print("="*60)
     
     task_counter = 1
@@ -49,9 +50,9 @@ async def main():
                 continue
                 
             print(f"\nAgents are working on Task {task_counter}...\n")
-            print("📦 Booting ephemeral Docker container for this specific task...")
+            print("Booting ephemeral Docker container for this specific task...")
             
-            # 2. Setup of Ephemeral Docker Code Execution (INSIDE the loop)
+            # Setup of Docker Code Execution
             # We use a unique workspace folder for each task to prevent file contamination
             task_workspace = f"workspace_task_{task_counter}"
             os.makedirs(task_workspace, exist_ok=True)
@@ -67,7 +68,7 @@ async def main():
             )
             
             try:
-                # 3. Create the Agents
+                # Create the Agents
                 coder = AssistantAgent(
                     name="Coder",
                     model_client=model_client,
@@ -93,7 +94,7 @@ async def main():
                     code_executor=code_executor
                 )
 
-                # 4. Creating the Team (Group Chat)
+                # Creating the Team (Group Chat)
                 # The terminal condition stops the loop if someone says "TERMINATE" or after 10 messages
                 text_termination = TextMentionTermination("TERMINATE")
                 max_msgs = MaxMessageTermination(max_messages=10)
@@ -104,14 +105,14 @@ async def main():
                     termination_condition=termination
                 )
 
-                # 5. Running the Autonomous Loop
+                # Running the Autonomous Loop
                 async for message in team.run_stream(task=user_prompt):
                     if isinstance(message, TextMessage):
                         print(f"[{message.source}] =>\n{message.content}\n{'-'*40}")
                     
             finally:
-                # 6. CRITICAL: Destroy the container when the task is done or fails
-                print("🗑️ Destroying ephemeral container...")
+                # CRITICAL: Destroy the container when the task is done or fails
+                print("Destroying ephemeral container...")
                 await code_executor.stop()
                 
             task_counter += 1
